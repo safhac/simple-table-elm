@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, div, input, table, td, text, th, thead, tr)
 import Html.Attributes exposing (colspan)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Styles exposing (..)
 
 
@@ -23,6 +23,7 @@ main =
 type alias Model =
     { list : List Note
     , sorter : Msg
+    , filterBy : Maybe String
     }
 
 
@@ -39,6 +40,7 @@ type alias Note =
 type Msg
     = ByText Bool
     | ByDate Bool
+    | FilterBy String
 
 
 
@@ -49,6 +51,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { list = initialNotes
       , sorter = ByText True
+      , filterBy = Nothing
       }
     , Cmd.none
     )
@@ -88,8 +91,9 @@ update msg model =
                             |> List.sortBy .dateCreated
                             |> List.reverse
             in
-            { list = sorted
-            , sorter = ByDate flag
+            { model
+                | list = sorted
+                , sorter = ByDate flag
             }
                 ! []
 
@@ -104,7 +108,10 @@ update msg model =
                             |> List.sortBy .body
                             |> List.reverse
             in
-            { list = sorted, sorter = ByText flag } ! []
+            { model | list = sorted, sorter = ByText flag } ! []
+
+        FilterBy search ->
+            { model | filterBy = Just search } ! []
 
 
 
@@ -114,16 +121,29 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        header =
+        tHead =
             renderHead model.sorter
 
-        body =
-            renderRows model.list
+        filtered =
+            case model.filterBy of
+                Nothing ->
+                    model.list
+
+                Just search ->
+                    model.list
+                        |> List.filter
+                            (\note ->
+                                String.toLower note.body
+                                    |> String.contains search
+                            )
+
+        tBody =
+            renderRows filtered
     in
     div [ standardContainerStyle ]
         [ table [ tableStyle ]
-            (header
-                :: body
+            (tHead
+                :: tBody
             )
         ]
 
@@ -148,7 +168,12 @@ renderHead msg =
                     True
     in
     thead []
-        [ tr [] [ td [ colspan 2 ] [ text "Search ", input [] [] ] ]
+        [ tr []
+            [ td [ colspan 2 ]
+                [ text "Search "
+                , input [ onInput FilterBy ] []
+                ]
+            ]
         , th [ onClick (ByText textFlag) ] [ text "note" ]
         , th [ onClick (ByDate dateFlag) ] [ text "date" ]
         ]

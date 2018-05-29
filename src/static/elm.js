@@ -8483,14 +8483,17 @@ var _safhac$elm_app_demo$Main$initialNotes = {
 		}
 	}
 };
-var _safhac$elm_app_demo$Main$Model = F2(
-	function (a, b) {
-		return {list: a, sorter: b};
+var _safhac$elm_app_demo$Main$Model = F3(
+	function (a, b, c) {
+		return {list: a, sorter: b, filterBy: c};
 	});
 var _safhac$elm_app_demo$Main$Note = F2(
 	function (a, b) {
 		return {body: a, dateCreated: b};
 	});
+var _safhac$elm_app_demo$Main$FilterBy = function (a) {
+	return {ctor: 'FilterBy', _0: a};
+};
 var _safhac$elm_app_demo$Main$ByDate = function (a) {
 	return {ctor: 'ByDate', _0: a};
 };
@@ -8501,55 +8504,70 @@ var _safhac$elm_app_demo$Main$init = {
 	ctor: '_Tuple2',
 	_0: {
 		list: _safhac$elm_app_demo$Main$initialNotes,
-		sorter: _safhac$elm_app_demo$Main$ByText(true)
+		sorter: _safhac$elm_app_demo$Main$ByText(true),
+		filterBy: _elm_lang$core$Maybe$Nothing
 	},
 	_1: _elm_lang$core$Platform_Cmd$none
 };
 var _safhac$elm_app_demo$Main$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
-		if (_p2.ctor === 'ByDate') {
-			var _p3 = _p2._0;
-			var sorted = _elm_lang$core$Native_Utils.eq(_p3, true) ? A2(
-				_elm_lang$core$List$sortBy,
-				function (_) {
-					return _.dateCreated;
-				},
-				model.list) : _elm_lang$core$List$reverse(
-				A2(
+		switch (_p2.ctor) {
+			case 'ByDate':
+				var _p3 = _p2._0;
+				var sorted = _elm_lang$core$Native_Utils.eq(_p3, true) ? A2(
 					_elm_lang$core$List$sortBy,
 					function (_) {
 						return _.dateCreated;
 					},
-					model.list));
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				{
-					list: sorted,
-					sorter: _safhac$elm_app_demo$Main$ByDate(_p3)
-				},
-				{ctor: '[]'});
-		} else {
-			var _p4 = _p2._0;
-			var sorted = _elm_lang$core$Native_Utils.eq(_p4, true) ? A2(
-				_elm_lang$core$List$sortBy,
-				function (_) {
-					return _.body;
-				},
-				model.list) : _elm_lang$core$List$reverse(
-				A2(
+					model.list) : _elm_lang$core$List$reverse(
+					A2(
+						_elm_lang$core$List$sortBy,
+						function (_) {
+							return _.dateCreated;
+						},
+						model.list));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							list: sorted,
+							sorter: _safhac$elm_app_demo$Main$ByDate(_p3)
+						}),
+					{ctor: '[]'});
+			case 'ByText':
+				var _p4 = _p2._0;
+				var sorted = _elm_lang$core$Native_Utils.eq(_p4, true) ? A2(
 					_elm_lang$core$List$sortBy,
 					function (_) {
 						return _.body;
 					},
-					model.list));
-			return A2(
-				_elm_lang$core$Platform_Cmd_ops['!'],
-				{
-					list: sorted,
-					sorter: _safhac$elm_app_demo$Main$ByText(_p4)
-				},
-				{ctor: '[]'});
+					model.list) : _elm_lang$core$List$reverse(
+					A2(
+						_elm_lang$core$List$sortBy,
+						function (_) {
+							return _.body;
+						},
+						model.list));
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							list: sorted,
+							sorter: _safhac$elm_app_demo$Main$ByText(_p4)
+						}),
+					{ctor: '[]'});
+			default:
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							filterBy: _elm_lang$core$Maybe$Just(_p2._0)
+						}),
+					{ctor: '[]'});
 		}
 	});
 var _safhac$elm_app_demo$Main$renderHead = function (msg) {
@@ -8593,7 +8611,11 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 								ctor: '::',
 								_0: A2(
 									_elm_lang$html$Html$input,
-									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onInput(_safhac$elm_app_demo$Main$FilterBy),
+										_1: {ctor: '[]'}
+									},
 									{ctor: '[]'}),
 								_1: {ctor: '[]'}
 							}
@@ -8636,8 +8658,24 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 		});
 };
 var _safhac$elm_app_demo$Main$view = function (model) {
-	var body = _safhac$elm_app_demo$Main$renderRows(model.list);
-	var header = _safhac$elm_app_demo$Main$renderHead(model.sorter);
+	var filtered = function () {
+		var _p7 = model.filterBy;
+		if (_p7.ctor === 'Nothing') {
+			return model.list;
+		} else {
+			return A2(
+				_elm_lang$core$List$filter,
+				function (note) {
+					return A2(
+						_elm_lang$core$String$contains,
+						_p7._0,
+						_elm_lang$core$String$toLower(note.body));
+				},
+				model.list);
+		}
+	}();
+	var tBody = _safhac$elm_app_demo$Main$renderRows(filtered);
+	var tHead = _safhac$elm_app_demo$Main$renderHead(model.sorter);
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -8654,7 +8692,7 @@ var _safhac$elm_app_demo$Main$view = function (model) {
 					_0: _safhac$elm_app_demo$Styles$tableStyle,
 					_1: {ctor: '[]'}
 				},
-				{ctor: '::', _0: header, _1: body}),
+				{ctor: '::', _0: tHead, _1: tBody}),
 			_1: {ctor: '[]'}
 		});
 };
@@ -8663,7 +8701,7 @@ var _safhac$elm_app_demo$Main$main = _elm_lang$html$Html$program(
 		init: _safhac$elm_app_demo$Main$init,
 		update: _safhac$elm_app_demo$Main$update,
 		view: _safhac$elm_app_demo$Main$view,
-		subscriptions: function (_p7) {
+		subscriptions: function (_p8) {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	})();
