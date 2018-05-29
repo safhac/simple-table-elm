@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, div, input, table, td, text, th, thead, tr)
-import Html.Attributes exposing (colspan)
+import Html.Attributes exposing (colspan, value)
 import Html.Events exposing (onClick, onInput)
 import Styles exposing (..)
 
@@ -22,15 +22,20 @@ main =
 
 type alias Model =
     { list : List Note
-    , sorter : Msg
+    , state : Msg
     , filterBy : Maybe String
     }
 
 
 type alias Note =
-    { body : String
+    { id : NoteId
+    , body : String
     , dateCreated : Float
     }
+
+
+type alias NoteId =
+    Int
 
 
 
@@ -38,9 +43,11 @@ type alias Note =
 
 
 type Msg
-    = ByText Bool
-    | ByDate Bool
+    = SortByText Bool
+    | SortByDate Bool
     | FilterBy String
+    | Select NoteId
+    | UpdateNote String
 
 
 
@@ -50,26 +57,27 @@ type Msg
 init : ( Model, Cmd Msg )
 init =
     ( { list = initialNotes
-      , sorter = ByText True
+      , state = SortByText True
       , filterBy = Nothing
       }
     , Cmd.none
     )
 
 
-createNote : String -> Note
-createNote message =
-    { body = toString message
+createNote : Int -> String -> Note
+createNote id_ message =
+    { id = id_
+    , body = toString message
     , dateCreated = 0
     }
 
 
 initialNotes : List Note
 initialNotes =
-    [ createNote "first"
-    , createNote "wat?"
-    , createNote "hi"
-    , createNote "lol"
+    [ createNote 1 "first"
+    , createNote 2 "wat?"
+    , createNote 3 "hi"
+    , createNote 4 "lol"
     ]
 
 
@@ -80,7 +88,7 @@ initialNotes =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ByDate flag ->
+        SortByDate flag ->
             let
                 sorted =
                     if flag == True then
@@ -93,11 +101,11 @@ update msg model =
             in
             { model
                 | list = sorted
-                , sorter = ByDate flag
+                , state = SortByDate flag
             }
                 ! []
 
-        ByText flag ->
+        SortByText flag ->
             let
                 sorted =
                     if flag == True then
@@ -108,10 +116,35 @@ update msg model =
                             |> List.sortBy .body
                             |> List.reverse
             in
-            { model | list = sorted, sorter = ByText flag } ! []
+            { model | list = sorted, state = SortByText flag } ! []
 
         FilterBy search ->
             { model | filterBy = Just search } ! []
+
+        Select noteId ->
+            { model | state = Select noteId } ! []
+
+        UpdateNote text ->
+            let
+                selectedNoteId =
+                    case model.state of
+                        Select id ->
+                            id
+
+                        _ ->
+                            0
+
+                updatedList =
+                    model.list
+                        |> List.map
+                            (\note ->
+                                if note.id == selectedNoteId then
+                                    { note | body = text }
+                                else
+                                    note
+                            )
+            in
+            { model | list = updatedList } ! []
 
 
 
@@ -122,7 +155,7 @@ view : Model -> Html Msg
 view model =
     let
         tHead =
-            renderHead model.sorter
+            renderHead model.state
 
         filtered =
             case model.filterBy of
@@ -138,7 +171,7 @@ view model =
                             )
 
         tBody =
-            renderRows filtered
+            renderRows model.state filtered
     in
     div [ standardContainerStyle ]
         [ table [ tableStyle ]
@@ -153,7 +186,7 @@ renderHead msg =
     let
         dateFlag =
             case msg of
-                ByDate True ->
+                SortByDate True ->
                     False
 
                 _ ->
@@ -161,7 +194,7 @@ renderHead msg =
 
         textFlag =
             case msg of
-                ByText True ->
+                SortByText True ->
                     False
 
                 _ ->
@@ -174,20 +207,43 @@ renderHead msg =
                 , input [ onInput FilterBy ] []
                 ]
             ]
-        , th [ onClick (ByText textFlag) ] [ text "note" ]
-        , th [ onClick (ByDate dateFlag) ] [ text "date" ]
+        , th [ onClick (SortByText textFlag) ] [ text "note" ]
+        , th [ onClick (SortByDate dateFlag) ] [ text "date" ]
         ]
 
 
-renderRows : List Note -> List (Html Msg)
-renderRows list =
+renderRows : Msg -> List Note -> List (Html Msg)
+renderRows msg list =
+    let
+        selectedId =
+            case msg of
+                Select id ->
+                    id
+
+                _ ->
+                    0
+    in
     list
-        |> List.map renderNote
+        |> List.map (\note -> renderNote note selectedId)
 
 
-renderNote : Note -> Html msg
-renderNote { body, dateCreated } =
-    tr [ rowStyle ]
-        [ td [] [ text body ]
+renderNote : Note -> NoteId -> Html Msg
+renderNote { id, body, dateCreated } selecteId =
+    let
+        html =
+            if id == selecteId then
+                input
+                    [ value body
+                    , onInput UpdateNote
+                    ]
+                    []
+            else
+                text body
+    in
+    tr
+        [ rowStyle
+        , onClick (Select id)
+        ]
+        [ td [] [ html ]
         , td [] [ toString dateCreated |> text ]
         ]
