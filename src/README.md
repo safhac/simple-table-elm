@@ -3,18 +3,10 @@
 - [Install Elm](http://elm-lang.org/install)
 - [Install Node](https://nodejs.org/en/download/)
 
-Install global packages
-<!-- 
+## Running the application: 
 ```
-npm install
+npm start
 ```
 
-## Running the application:
+elm packages will be installed for you
 
-In terminal run:
-
-```
-nf start
-``` -->
-
-Open `http://localhost:8000`

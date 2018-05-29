@@ -1,6 +1,7 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, table, td, text, th, thead, tr)
+import Html exposing (Html, div, input, table, td, text, th, thead, tr)
+import Html.Attributes exposing (colspan)
 import Html.Events exposing (onClick)
 import Styles exposing (..)
 
@@ -87,7 +88,10 @@ update msg model =
                             |> List.sortBy .dateCreated
                             |> List.reverse
             in
-            { list = sorted, sorter = ByDate flag } ! []
+            { list = sorted
+            , sorter = ByDate flag
+            }
+                ! []
 
         ByText flag ->
             let
@@ -144,7 +148,8 @@ renderHead msg =
                     True
     in
     thead []
-        [ th [ onClick (ByText textFlag) ] [ text "note" ]
+        [ tr [] [ td [ colspan 2 ] [ text "Search ", input [] [] ] ]
+        , th [ onClick (ByText textFlag) ] [ text "note" ]
         , th [ onClick (ByDate dateFlag) ] [ text "date" ]
         ]
 

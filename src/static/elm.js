@@ -8575,16 +8575,29 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$th,
+				_elm_lang$html$Html$tr,
+				{ctor: '[]'},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_safhac$elm_app_demo$Main$ByText(textFlag)),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('note'),
+					_0: A2(
+						_elm_lang$html$Html$td,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$colspan(2),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Search '),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$input,
+									{ctor: '[]'},
+									{ctor: '[]'}),
+								_1: {ctor: '[]'}
+							}
+						}),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -8594,15 +8607,31 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onClick(
-							_safhac$elm_app_demo$Main$ByDate(dateFlag)),
+							_safhac$elm_app_demo$Main$ByText(textFlag)),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('date'),
+						_0: _elm_lang$html$Html$text('note'),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$th,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_safhac$elm_app_demo$Main$ByDate(dateFlag)),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('date'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
