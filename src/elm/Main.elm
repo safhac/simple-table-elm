@@ -2,7 +2,9 @@ port module Main exposing (..)
 
 import Html exposing (Html, div, input, table, td, text, th, thead, tr)
 import Html.Attributes exposing (colspan, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (on, onClick, onInput)
+import Json.Decode as Json
+import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Styles exposing (..)
 
 
@@ -12,7 +14,9 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = \model -> gotTime OnGetTime
+        , subscriptions =
+            \model ->
+                gotTime OnGetTime
         }
 
 
@@ -57,6 +61,7 @@ type Msg
     | UpdateNote String
     | OnGetTime String
     | GetTime
+    | HandleKeyboardEvent KeyboardEvent
 
 
 
@@ -168,8 +173,19 @@ update msg model =
         GetTime ->
             ( model, callGetTime () )
 
+        HandleKeyboardEvent event ->
+            case event.key of
+                Just "Escape" ->
+                    { model | state = HandleKeyboardEvent event } ! []
+
+                _ ->
+                    model ! []
 
 
+
+-- case event.keyCode of
+--     Escape ->
+--         { model | state = HandleKeyboardEvent event } ! []
 -- VIEW
 
 
@@ -195,7 +211,10 @@ view model =
         tBody =
             renderRows model.state filtered
     in
-    div [ standardContainerStyle ]
+    div
+        [ on "keydown" (Json.map HandleKeyboardEvent decodeKeyboardEvent)
+        , standardContainerStyle
+        ]
         [ table [ tableStyle ]
             (tHead
                 :: tBody
