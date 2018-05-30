@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Html exposing (Html, div, input, table, td, text, th, thead, tr)
 import Html.Attributes exposing (colspan, value)
@@ -12,11 +12,24 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = \model -> gotTime OnGetTime
         }
 
 
 
+-- PORTS
+
+
+port callGetTime : () -> Cmd msg
+
+
+port gotTime : (String -> msg) -> Sub msg
+
+
+
+-- send : msg -> Cmd msg
+-- send msg =
+--     Task.perform identity identity (Task.succeed msg)
 -- Model
 
 
@@ -30,7 +43,7 @@ type alias Model =
 type alias Note =
     { id : NoteId
     , body : String
-    , dateCreated : Float
+    , dateCreated : String
     }
 
 
@@ -48,6 +61,8 @@ type Msg
     | FilterBy String
     | Select NoteId
     | UpdateNote String
+    | OnGetTime String
+    | GetTime
 
 
 
@@ -68,7 +83,7 @@ createNote : Int -> String -> Note
 createNote id_ message =
     { id = id_
     , body = toString message
-    , dateCreated = 0
+    , dateCreated = "5/28/2018, 8:23:54 AM"
     }
 
 
@@ -146,6 +161,16 @@ update msg model =
             in
             { model | list = updatedList } ! []
 
+        OnGetTime time ->
+            let
+                _ =
+                    Debug.log "" time
+            in
+            model ! []
+
+        GetTime ->
+            ( model, callGetTime () )
+
 
 
 -- VIEW
@@ -202,10 +227,11 @@ renderHead msg =
     in
     thead []
         [ tr []
-            [ td [ colspan 2 ]
+            [ td []
                 [ text "Search "
                 , input [ onInput FilterBy ] []
                 ]
+            , td [ onClick GetTime ] [ text "time" ]
             ]
         , th [ onClick (SortByText textFlag) ] [ text "note" ]
         , th [ onClick (SortByDate dateFlag) ] [ text "date" ]

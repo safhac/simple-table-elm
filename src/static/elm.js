@@ -8428,7 +8428,7 @@ var _safhac$elm_app_demo$Main$createNote = F2(
 		return {
 			id: id_,
 			body: _elm_lang$core$Basics$toString(message),
-			dateCreated: 0
+			dateCreated: '5/28/2018, 8:23:54 AM'
 		};
 	});
 var _safhac$elm_app_demo$Main$initialNotes = {
@@ -8448,6 +8448,12 @@ var _safhac$elm_app_demo$Main$initialNotes = {
 		}
 	}
 };
+var _safhac$elm_app_demo$Main$callGetTime = _elm_lang$core$Native_Platform.outgoingPort(
+	'callGetTime',
+	function (v) {
+		return null;
+	});
+var _safhac$elm_app_demo$Main$gotTime = _elm_lang$core$Native_Platform.incomingPort('gotTime', _elm_lang$core$Json_Decode$string);
 var _safhac$elm_app_demo$Main$Model = F3(
 	function (a, b, c) {
 		return {list: a, state: b, filterBy: c};
@@ -8456,6 +8462,10 @@ var _safhac$elm_app_demo$Main$Note = F3(
 	function (a, b, c) {
 		return {id: a, body: b, dateCreated: c};
 	});
+var _safhac$elm_app_demo$Main$GetTime = {ctor: 'GetTime'};
+var _safhac$elm_app_demo$Main$OnGetTime = function (a) {
+	return {ctor: 'OnGetTime', _0: a};
+};
 var _safhac$elm_app_demo$Main$UpdateNote = function (a) {
 	return {ctor: 'UpdateNote', _0: a};
 };
@@ -8619,7 +8629,7 @@ var _safhac$elm_app_demo$Main$update = F2(
 							state: _safhac$elm_app_demo$Main$Select(_p5._0)
 						}),
 					{ctor: '[]'});
-			default:
+			case 'UpdateNote':
 				var selectedNoteId = function () {
 					var _p8 = model.state;
 					if (_p8.ctor === 'Select') {
@@ -8642,20 +8652,33 @@ var _safhac$elm_app_demo$Main$update = F2(
 						model,
 						{list: updatedList}),
 					{ctor: '[]'});
+			case 'OnGetTime':
+				var _p9 = A2(_elm_lang$core$Debug$log, '', _p5._0);
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _safhac$elm_app_demo$Main$callGetTime(
+						{ctor: '_Tuple0'})
+				};
 		}
 	});
 var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 	var textFlag = function () {
-		var _p9 = msg;
-		if ((_p9.ctor === 'SortByText') && (_p9._0 === true)) {
+		var _p10 = msg;
+		if ((_p10.ctor === 'SortByText') && (_p10._0 === true)) {
 			return false;
 		} else {
 			return true;
 		}
 	}();
 	var dateFlag = function () {
-		var _p10 = msg;
-		if ((_p10.ctor === 'SortByDate') && (_p10._0 === true)) {
+		var _p11 = msg;
+		if ((_p11.ctor === 'SortByDate') && (_p11._0 === true)) {
 			return false;
 		} else {
 			return true;
@@ -8673,11 +8696,7 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$html$Html$td,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$colspan(2),
-							_1: {ctor: '[]'}
-						},
+						{ctor: '[]'},
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text('Search '),
@@ -8694,7 +8713,22 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 								_1: {ctor: '[]'}
 							}
 						}),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$td,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_safhac$elm_app_demo$Main$GetTime),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('time'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}),
 			_1: {
 				ctor: '::',
@@ -8733,8 +8767,8 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 };
 var _safhac$elm_app_demo$Main$view = function (model) {
 	var filtered = function () {
-		var _p11 = model.filterBy;
-		if (_p11.ctor === 'Nothing') {
+		var _p12 = model.filterBy;
+		if (_p12.ctor === 'Nothing') {
 			return model.list;
 		} else {
 			return A2(
@@ -8742,7 +8776,7 @@ var _safhac$elm_app_demo$Main$view = function (model) {
 				function (note) {
 					return A2(
 						_elm_lang$core$String$contains,
-						_p11._0,
+						_p12._0,
 						_elm_lang$core$String$toLower(note.body));
 				},
 				model.list);
@@ -8775,8 +8809,8 @@ var _safhac$elm_app_demo$Main$main = _elm_lang$html$Html$program(
 		init: _safhac$elm_app_demo$Main$init,
 		update: _safhac$elm_app_demo$Main$update,
 		view: _safhac$elm_app_demo$Main$view,
-		subscriptions: function (_p12) {
-			return _elm_lang$core$Platform_Sub$none;
+		subscriptions: function (model) {
+			return _safhac$elm_app_demo$Main$gotTime(_safhac$elm_app_demo$Main$OnGetTime);
 		}
 	})();
 
