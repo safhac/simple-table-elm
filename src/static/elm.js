@@ -8423,26 +8423,22 @@ var _safhac$elm_app_demo$Styles$standardContainerStyle = _elm_lang$html$Html_Att
 		}
 	});
 
-var _safhac$elm_app_demo$Main$createNote = F2(
-	function (id_, message) {
-		return {
-			id: id_,
-			body: _elm_lang$core$Basics$toString(message),
-			dateCreated: '5/28/2018, 8:23:54 AM'
-		};
+var _safhac$elm_app_demo$Main$createNote = F3(
+	function (id_, message, time) {
+		return {id: id_, body: message, dateCreated: '5/28/2018, 8:23:54 AM'};
 	});
 var _safhac$elm_app_demo$Main$initialNotes = {
 	ctor: '::',
-	_0: A2(_safhac$elm_app_demo$Main$createNote, 1, 'first'),
+	_0: A3(_safhac$elm_app_demo$Main$createNote, 1, 'first', '5/02/2018, 11:23:54 AM'),
 	_1: {
 		ctor: '::',
-		_0: A2(_safhac$elm_app_demo$Main$createNote, 2, 'wat?'),
+		_0: A3(_safhac$elm_app_demo$Main$createNote, 2, 'wat?', '5/04/2018, 9:23:54 PM'),
 		_1: {
 			ctor: '::',
-			_0: A2(_safhac$elm_app_demo$Main$createNote, 3, 'hi'),
+			_0: A3(_safhac$elm_app_demo$Main$createNote, 3, 'hi', '5/04/2018, 9:40:54 PM'),
 			_1: {
 				ctor: '::',
-				_0: A2(_safhac$elm_app_demo$Main$createNote, 4, 'lol'),
+				_0: A3(_safhac$elm_app_demo$Main$createNote, 4, 'lol', '5/04/2018, 10:02:54 PM'),
 				_1: {ctor: '[]'}
 			}
 		}
@@ -8454,9 +8450,9 @@ var _safhac$elm_app_demo$Main$callGetTime = _elm_lang$core$Native_Platform.outgo
 		return null;
 	});
 var _safhac$elm_app_demo$Main$gotTime = _elm_lang$core$Native_Platform.incomingPort('gotTime', _elm_lang$core$Json_Decode$string);
-var _safhac$elm_app_demo$Main$Model = F3(
-	function (a, b, c) {
-		return {list: a, state: b, filterBy: c};
+var _safhac$elm_app_demo$Main$Model = F4(
+	function (a, b, c, d) {
+		return {currentTime: a, list: b, state: c, filterBy: d};
 	});
 var _safhac$elm_app_demo$Main$Note = F3(
 	function (a, b, c) {
@@ -8518,8 +8514,7 @@ var _safhac$elm_app_demo$Main$renderNote = F2(
 						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								_elm_lang$core$Basics$toString(_p1.dateCreated)),
+							_0: _elm_lang$html$Html$text(_p1.dateCreated),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -8555,11 +8550,13 @@ var _safhac$elm_app_demo$Main$SortByText = function (a) {
 var _safhac$elm_app_demo$Main$init = {
 	ctor: '_Tuple2',
 	_0: {
+		currentTime: '',
 		list: _safhac$elm_app_demo$Main$initialNotes,
 		state: _safhac$elm_app_demo$Main$SortByText(true),
 		filterBy: _elm_lang$core$Maybe$Nothing
 	},
-	_1: _elm_lang$core$Platform_Cmd$none
+	_1: _safhac$elm_app_demo$Main$callGetTime(
+		{ctor: '_Tuple0'})
 };
 var _safhac$elm_app_demo$Main$update = F2(
 	function (msg, model) {
@@ -8653,10 +8650,11 @@ var _safhac$elm_app_demo$Main$update = F2(
 						{list: updatedList}),
 					{ctor: '[]'});
 			case 'OnGetTime':
-				var _p9 = A2(_elm_lang$core$Debug$log, '', _p5._0);
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
-					model,
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{currentTime: _p5._0}),
 					{ctor: '[]'});
 			default:
 				return {
@@ -8669,16 +8667,16 @@ var _safhac$elm_app_demo$Main$update = F2(
 	});
 var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 	var textFlag = function () {
-		var _p10 = msg;
-		if ((_p10.ctor === 'SortByText') && (_p10._0 === true)) {
+		var _p9 = msg;
+		if ((_p9.ctor === 'SortByText') && (_p9._0 === true)) {
 			return false;
 		} else {
 			return true;
 		}
 	}();
 	var dateFlag = function () {
-		var _p11 = msg;
-		if ((_p11.ctor === 'SortByDate') && (_p11._0 === true)) {
+		var _p10 = msg;
+		if ((_p10.ctor === 'SortByDate') && (_p10._0 === true)) {
 			return false;
 		} else {
 			return true;
@@ -8713,22 +8711,7 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 								_1: {ctor: '[]'}
 							}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$td,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_safhac$elm_app_demo$Main$GetTime),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('time'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				}),
 			_1: {
 				ctor: '::',
@@ -8767,8 +8750,8 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 };
 var _safhac$elm_app_demo$Main$view = function (model) {
 	var filtered = function () {
-		var _p12 = model.filterBy;
-		if (_p12.ctor === 'Nothing') {
+		var _p11 = model.filterBy;
+		if (_p11.ctor === 'Nothing') {
 			return model.list;
 		} else {
 			return A2(
@@ -8776,7 +8759,7 @@ var _safhac$elm_app_demo$Main$view = function (model) {
 				function (note) {
 					return A2(
 						_elm_lang$core$String$contains,
-						_p12._0,
+						_p11._0,
 						_elm_lang$core$String$toLower(note.body));
 				},
 				model.list);

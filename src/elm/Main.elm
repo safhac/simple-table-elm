@@ -26,15 +26,9 @@ port callGetTime : () -> Cmd msg
 port gotTime : (String -> msg) -> Sub msg
 
 
-
--- send : msg -> Cmd msg
--- send msg =
---     Task.perform identity identity (Task.succeed msg)
--- Model
-
-
 type alias Model =
-    { list : List Note
+    { currentTime : String
+    , list : List Note
     , state : Msg
     , filterBy : Maybe String
     }
@@ -71,28 +65,29 @@ type Msg
 
 init : ( Model, Cmd Msg )
 init =
-    ( { list = initialNotes
+    ( { currentTime = ""
+      , list = initialNotes
       , state = SortByText True
       , filterBy = Nothing
       }
-    , Cmd.none
+    , callGetTime ()
     )
 
 
-createNote : Int -> String -> Note
-createNote id_ message =
+createNote : Int -> String -> String -> Note
+createNote id_ message time =
     { id = id_
-    , body = toString message
+    , body = message
     , dateCreated = "5/28/2018, 8:23:54 AM"
     }
 
 
 initialNotes : List Note
 initialNotes =
-    [ createNote 1 "first"
-    , createNote 2 "wat?"
-    , createNote 3 "hi"
-    , createNote 4 "lol"
+    [ createNote 1 "first" "5/02/2018, 11:23:54 AM"
+    , createNote 2 "wat?" "5/04/2018, 9:23:54 PM"
+    , createNote 3 "hi" "5/04/2018, 9:40:54 PM"
+    , createNote 4 "lol" "5/04/2018, 10:02:54 PM"
     ]
 
 
@@ -162,11 +157,7 @@ update msg model =
             { model | list = updatedList } ! []
 
         OnGetTime time ->
-            let
-                _ =
-                    Debug.log "" time
-            in
-            model ! []
+            { model | currentTime = time } ! []
 
         GetTime ->
             ( model, callGetTime () )
@@ -231,7 +222,6 @@ renderHead msg =
                 [ text "Search "
                 , input [ onInput FilterBy ] []
                 ]
-            , td [ onClick GetTime ] [ text "time" ]
             ]
         , th [ onClick (SortByText textFlag) ] [ text "note" ]
         , th [ onClick (SortByDate dateFlag) ] [ text "date" ]
@@ -271,5 +261,5 @@ renderNote { id, body, dateCreated } selecteId =
         , onClick (Select id)
         ]
         [ td [] [ html ]
-        , td [] [ toString dateCreated |> text ]
+        , td [] [ dateCreated |> text ]
         ]
