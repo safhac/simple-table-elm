@@ -136,6 +136,9 @@ update msg model =
 
         UpdateNote text ->
             let
+                _ =
+                    callGetTime ()
+
                 selectedNoteId =
                     case model.state of
                         Select id ->
@@ -149,7 +152,10 @@ update msg model =
                         |> List.map
                             (\note ->
                                 if note.id == selectedNoteId then
-                                    { note | body = text }
+                                    { note
+                                        | body = text
+                                        , dateCreated = model.currentTime
+                                    }
                                 else
                                     note
                             )
@@ -249,7 +255,8 @@ renderNote { id, body, dateCreated } selecteId =
         html =
             if id == selecteId then
                 input
-                    [ value body
+                    [ edited
+                    , value body
                     , onInput UpdateNote
                     ]
                     []

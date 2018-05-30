@@ -8477,11 +8477,15 @@ var _safhac$elm_app_demo$Main$renderNote = F2(
 			_elm_lang$html$Html$input,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$value(_p2),
+				_0: _safhac$elm_app_demo$Styles$edited,
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onInput(_safhac$elm_app_demo$Main$UpdateNote),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$value(_p2),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_safhac$elm_app_demo$Main$UpdateNote),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{ctor: '[]'}) : _elm_lang$html$Html$text(_p2);
@@ -8640,9 +8644,11 @@ var _safhac$elm_app_demo$Main$update = F2(
 					function (note) {
 						return _elm_lang$core$Native_Utils.eq(note.id, selectedNoteId) ? _elm_lang$core$Native_Utils.update(
 							note,
-							{body: _p5._0}) : note;
+							{body: _p5._0, dateCreated: model.currentTime}) : note;
 					},
 					model.list);
+				var _p9 = _safhac$elm_app_demo$Main$callGetTime(
+					{ctor: '_Tuple0'});
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -8667,16 +8673,16 @@ var _safhac$elm_app_demo$Main$update = F2(
 	});
 var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 	var textFlag = function () {
-		var _p9 = msg;
-		if ((_p9.ctor === 'SortByText') && (_p9._0 === true)) {
+		var _p10 = msg;
+		if ((_p10.ctor === 'SortByText') && (_p10._0 === true)) {
 			return false;
 		} else {
 			return true;
 		}
 	}();
 	var dateFlag = function () {
-		var _p10 = msg;
-		if ((_p10.ctor === 'SortByDate') && (_p10._0 === true)) {
+		var _p11 = msg;
+		if ((_p11.ctor === 'SortByDate') && (_p11._0 === true)) {
 			return false;
 		} else {
 			return true;
@@ -8750,8 +8756,8 @@ var _safhac$elm_app_demo$Main$renderHead = function (msg) {
 };
 var _safhac$elm_app_demo$Main$view = function (model) {
 	var filtered = function () {
-		var _p11 = model.filterBy;
-		if (_p11.ctor === 'Nothing') {
+		var _p12 = model.filterBy;
+		if (_p12.ctor === 'Nothing') {
 			return model.list;
 		} else {
 			return A2(
@@ -8759,7 +8765,7 @@ var _safhac$elm_app_demo$Main$view = function (model) {
 				function (note) {
 					return A2(
 						_elm_lang$core$String$contains,
-						_p11._0,
+						_p12._0,
 						_elm_lang$core$String$toLower(note.body));
 				},
 				model.list);
