@@ -83,7 +83,7 @@ createNote : Int -> String -> String -> Note
 createNote id_ message time =
     { id = id_
     , body = message
-    , dateCreated = "5/28/2018, 8:23:54 AM"
+    , dateCreated = time
     }
 
 
@@ -178,14 +178,14 @@ update msg model =
                 Just "Escape" ->
                     { model | state = HandleKeyboardEvent event } ! []
 
+                Just "Enter" ->
+                    { model | state = HandleKeyboardEvent event } ! []
+
                 _ ->
                     model ! []
 
 
 
--- case event.keyCode of
---     Escape ->
---         { model | state = HandleKeyboardEvent event } ! []
 -- VIEW
 
 

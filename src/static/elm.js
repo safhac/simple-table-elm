@@ -9916,7 +9916,7 @@ var _safhac$elm_app_demo$Styles$standardContainerStyle = _elm_lang$html$Html_Att
 
 var _safhac$elm_app_demo$Main$createNote = F3(
 	function (id_, message, time) {
-		return {id: id_, body: message, dateCreated: '5/28/2018, 8:23:54 AM'};
+		return {id: id_, body: message, dateCreated: time};
 	});
 var _safhac$elm_app_demo$Main$initialNotes = {
 	ctor: '::',
@@ -10166,21 +10166,39 @@ var _safhac$elm_app_demo$Main$update = F2(
 			default:
 				var _p11 = _p5._0;
 				var _p10 = _p11.key;
-				if ((_p10.ctor === 'Just') && (_p10._0 === 'Escape')) {
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{
-								state: _safhac$elm_app_demo$Main$HandleKeyboardEvent(_p11)
-							}),
-						{ctor: '[]'});
-				} else {
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						model,
-						{ctor: '[]'});
-				}
+				_v4_2:
+				do {
+					if (_p10.ctor === 'Just') {
+						switch (_p10._0) {
+							case 'Escape':
+								return A2(
+									_elm_lang$core$Platform_Cmd_ops['!'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											state: _safhac$elm_app_demo$Main$HandleKeyboardEvent(_p11)
+										}),
+									{ctor: '[]'});
+							case 'Enter':
+								return A2(
+									_elm_lang$core$Platform_Cmd_ops['!'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											state: _safhac$elm_app_demo$Main$HandleKeyboardEvent(_p11)
+										}),
+									{ctor: '[]'});
+							default:
+								break _v4_2;
+						}
+					} else {
+						break _v4_2;
+					}
+				} while(false);
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					model,
+					{ctor: '[]'});
 		}
 	});
 var _safhac$elm_app_demo$Main$renderHead = function (msg) {
